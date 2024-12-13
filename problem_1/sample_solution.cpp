@@ -2,8 +2,9 @@
 #include <vector>
 #include <cstdint>
 #include <algorithm>
+#include <thread>
+#include <mutex>
 #include <iomanip>
-
 
 std::vector<std::vector<double>> read_matrix() {
     size_t rows, cols;
@@ -43,8 +44,14 @@ std::vector<std::vector<double>> read_matrix() {
     return result;
 }
 
+void boost() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+}
 
 int main() {
+    boost();
     auto left = read_matrix();
     auto right = read_matrix();
     auto left_rows = left.size();
@@ -56,13 +63,19 @@ int main() {
         return 1;
     }
 
-    std::vector<std::vector<double>> result(left_rows, std::vector<double>(right_cols));
+    std::vector<std::vector<long double>> result(left_rows, std::vector<long double>(right_cols));    
+    std::vector<std::thread> threads;
     for (int i = 0; i < left_rows; ++i) {
         for (int j = 0; j < right_cols; ++j) {
-            for (int k = 0; k < left_cols; ++k) {
-                result[i][j] += left[i][k] * right[k][j];
-            }
+            threads.emplace_back([i, j, &left, &right, &result] {
+                for (size_t k = 0; k < left[0].size(); ++k) {
+                    result[i][j] += left[i][k] * right[k][j];
+                }
+            });
         }
+    }
+    for (auto& thread : threads) {
+        thread.join();
     }
 
     std::cout << left_rows << ' ' << right_cols << "\n";
