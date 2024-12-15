@@ -44,14 +44,10 @@ std::vector<std::vector<double>> read_matrix() {
     return result;
 }
 
-void boost() {
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    std::cout.tie(nullptr);
-}
+
 
 int main() {
-    boost();
+    
     auto left = read_matrix();
     auto right = read_matrix();
     auto left_rows = left.size();
